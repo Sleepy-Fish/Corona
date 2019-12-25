@@ -6,9 +6,18 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 const app = new PIXI.Application({
   autoResize: true,
-  resolution: devicePixelRatio
+  resolution: devicePixelRatio,
+  width: window.innerWidth,
+  height: window.innerHeight
 });
 document.body.appendChild(app.view);
+
+window.addEventListener('resize', () => {
+  app.renderer.resize(window.innerWidth, window.innerHeight);
+  CurrentState.resize(window.innerWidth, window.innerHeight);
+  app.width = app.renderer.width / app.renderer.resolution;
+  app.height = app.renderer.height / app.renderer.resolution;
+});
 
 let CurrentState = null;
 window.changeState = state => {

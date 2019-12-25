@@ -1,3 +1,4 @@
 {
-  "SCALE": 2
+  "SCALE": 2,
+  "PADDLE_START_ANGLE": 270
 }

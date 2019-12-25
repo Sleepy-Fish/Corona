@@ -1,6 +1,7 @@
 // import C from '../constants.json';
 import * as PIXI from 'pixi.js';
 import State from './State';
+import { Corona, Paddle } from '../components';
 
 export default class GameState extends State {
   constructor (app) {
@@ -10,12 +11,19 @@ export default class GameState extends State {
     this.fpsText.x = 10;
     this.fpsText.y = 10;
 
+    this.corona = new Corona(this.scene);
+    this.paddle = new Paddle(this.corona);
     this.scene.addChild(this.fpsText);
   }
 
   run (delta) {
     super.run(delta);
-    this.fpsText = Math.round(this.app.ticker.FPS);
+    this.fpsText.text = Math.round(this.app.ticker.FPS);
+    this.paddle.run(delta);
+  }
+
+  resize (x, y) {
+    this.corona.position(x / 2, y / 2);
   }
 
   activate () {
