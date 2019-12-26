@@ -1,6 +1,8 @@
 import C from '../constants.json';
 import * as PIXI from 'pixi.js';
 import { Controller } from '../input';
+import { Vector, Point } from '../geom';
+import Ball from './Ball';
 
 const _defaults = {
   radius: 450,
@@ -28,6 +30,7 @@ export default class Paddle {
     arc = _defaults.arc
   } = _defaults) {
     this.corona = corona;
+    this.radius = radius;
     this.velocity = 0;
     this.acc = 0.1;
     this.dec = 0.2;
@@ -36,10 +39,12 @@ export default class Paddle {
     this.right = false;
     this.accelerating = false;
     this.paddle = makePaddle(radius, arc);
+    corona.paddle = this;
     corona.container.addChild(this.paddle);
     this.controller = new Controller({
       left: 65,
-      right: 68
+      right: 68,
+      space: 32
     });
     this.controller.onPress('left', () => {
       this.left = true;
@@ -53,6 +58,34 @@ export default class Paddle {
     this.controller.onRelease('right', () => {
       this.right = false;
     });
+    this.controller.onPress('space', () => {
+      if (this.ball) this.ball.destroy();
+      this.ball = new Ball(corona);
+    });
+  }
+
+  // Coordinate system that gives x, y location in relation to center of corona
+  // It shifts slightly toward center of corona to avoid immediate collsions
+
+  x () {
+    return Math.cos(this.paddle.rotation - (Math.PI / 2)) * (this.radius - 20);
+  }
+
+  y () {
+    return Math.sin(this.paddle.rotation - (Math.PI / 2)) * (this.radius - 20);
+  }
+
+  centripetal () {
+    return Vector.One().direction(this.paddle.rotation + (Math.PI / 2)).magnitude(5);
+  }
+
+  getPoints () {
+    const v = this.paddle.children[0];
+    const p = [];
+    for (let i = 0; i < v.length; i += 2) {
+      p.push(new Point(v[i], v[i + 1]));
+    }
+    return p;
   }
 
   run (delta) {
@@ -71,5 +104,6 @@ export default class Paddle {
       this.velocity = Math.min(0, (this.velocity + this.dec));
     }
     this.paddle.angle += this.velocity;
+    if (this.ball) this.ball.run(delta);
   }
 }

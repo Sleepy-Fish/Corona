@@ -1,8 +1,9 @@
 
 import * as PIXI from 'pixi.js';
+import { Point } from '../geom';
 
 const _defaults = {
-  position: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+  position: new Point(window.innerWidth / 2, window.innerHeight / 2),
   radius: 150,
   core: 20,
   segments: 12,
@@ -72,9 +73,9 @@ export default class Corona {
 
   position (x, y) {
     if (!arguments.length) return this.pos;
-    x = Number.isInteger(x) ? x : this.pos.x;
-    y = Number.isInteger(y) ? y : this.pos.Y;
-    this.pos = { x, y };
+    x = !isNaN(x) ? x : this.pos.x;
+    y = !isNaN(y) ? y : this.pos.y;
+    this.pos = new Point(x, y);
     this.container.x = x;
     this.container.y = y;
     return this.pos;
