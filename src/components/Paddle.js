@@ -1,7 +1,7 @@
 import C from '../constants.json';
 import * as PIXI from 'pixi.js';
 import { Controller } from '../input';
-import { Vector, Point } from '../geom';
+import { Vector } from '../geom';
 import Ball from './Ball';
 
 const _defaults = {
@@ -10,7 +10,7 @@ const _defaults = {
 };
 
 const makePaddle = (radius, arc) => {
-  const paddle = new PIXI.Sprite();
+  const sprite = new PIXI.Sprite();
   const gfx = new PIXI.Graphics();
   const radStart = (Math.PI / 180) * (C.PADDLE_START_ANGLE - (arc / 2));
   const radEnd = (Math.PI / 180) * (C.PADDLE_START_ANGLE + (arc / 2));
@@ -20,8 +20,11 @@ const makePaddle = (radius, arc) => {
   gfx.arc(0, 0, radius + 10, radEnd, radStart, true);
   gfx.lineTo((Math.cos(radStart) * (radius + 10)), (Math.sin(radStart) * (radius + 10)));
   gfx.endFill();
-  paddle.addChild(gfx);
-  return paddle;
+  sprite.addChild(gfx);
+  return {
+    sprite,
+    gfx
+  };
 };
 
 export default class Paddle {
@@ -38,9 +41,11 @@ export default class Paddle {
     this.left = false;
     this.right = false;
     this.accelerating = false;
-    this.paddle = makePaddle(radius, arc);
+    const paddle = makePaddle(radius, arc);
+    this.sprite = paddle.sprite;
+    this.gfx = paddle.gfx;
     corona.paddle = this;
-    corona.container.addChild(this.paddle);
+    corona.container.addChild(this.sprite);
     this.controller = new Controller({
       left: 65,
       right: 68,
@@ -60,7 +65,7 @@ export default class Paddle {
     });
     this.controller.onPress('space', () => {
       if (this.ball) this.ball.destroy();
-      this.ball = new Ball(corona);
+      this.ball = new Ball(corona, this.world);
     });
   }
 
@@ -68,24 +73,15 @@ export default class Paddle {
   // It shifts slightly toward center of corona to avoid immediate collsions
 
   x () {
-    return Math.cos(this.paddle.rotation - (Math.PI / 2)) * (this.radius - 20);
+    return Math.cos(this.sprite.rotation - (Math.PI / 2)) * (this.radius - 20);
   }
 
   y () {
-    return Math.sin(this.paddle.rotation - (Math.PI / 2)) * (this.radius - 20);
+    return Math.sin(this.sprite.rotation - (Math.PI / 2)) * (this.radius - 20);
   }
 
   centripetal () {
-    return Vector.One().direction(this.paddle.rotation + (Math.PI / 2)).magnitude(5);
-  }
-
-  getPoints () {
-    const v = this.paddle.children[0];
-    const p = [];
-    for (let i = 0; i < v.length; i += 2) {
-      p.push(new Point(v[i], v[i + 1]));
-    }
-    return p;
+    return Vector.One().direction(this.sprite.rotation + (Math.PI / 2)).magnitude(5);
   }
 
   run (delta) {
@@ -103,7 +99,7 @@ export default class Paddle {
     if (this.velocity < 0 && !this.left) {
       this.velocity = Math.min(0, (this.velocity + this.dec));
     }
-    this.paddle.angle += this.velocity;
+    this.sprite.angle += this.velocity;
     if (this.ball) this.ball.run(delta);
   }
 }

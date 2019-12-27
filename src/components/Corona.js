@@ -14,7 +14,7 @@ const _defaults = {
 };
 
 const makeBlock = (r1, r2, start, end) => {
-  const block = new PIXI.Sprite();
+  const sprite = new PIXI.Sprite();
   const gfx = new PIXI.Graphics();
   const radStart = (Math.PI / 180) * start;
   const radEnd = (Math.PI / 180) * end;
@@ -24,8 +24,11 @@ const makeBlock = (r1, r2, start, end) => {
   gfx.arc(0, 0, r2, radEnd, radStart, true);
   gfx.lineTo((Math.cos(radStart) * r2), (Math.sin(radStart) * r2));
   gfx.endFill();
-  block.addChild(gfx);
-  return block;
+  sprite.addChild(gfx);
+  return {
+    sprite,
+    gfx
+  };
 };
 
 const makeCore = (r) => {
@@ -60,12 +63,13 @@ export default class Corona {
       const inner = (l * lStep) + (l * layerGutter) + core;
       const outer = (l * lStep) + (l * layerGutter) + lStep + core;
       for (let s = 0; s < segments; s++) {
-        this.container.addChild(makeBlock(
+        const block = makeBlock(
           inner,
           outer,
           (s * sStep) + (s * segmentGutter),
-          (s * sStep) + (s * segmentGutter) + sStep)
+          (s * sStep) + (s * segmentGutter) + sStep
         );
+        this.container.addChild(block.sprite);
       }
     }
     stage.addChild(this.container);

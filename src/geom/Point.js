@@ -1,7 +1,12 @@
 export default class Point {
-  constructor (x, y) {
-    this.x = x || 0;
-    this.y = y || 0;
+  constructor (xOrPoint, y) {
+    if (typeof xOrPoint === 'object') {
+      this.x = xOrPoint.x || 0;
+      this.y = xOrPoint.y || 0;
+    } else {
+      this.x = xOrPoint || 0;
+      this.y = y || 0;
+    }
   }
 
   static Zero () {

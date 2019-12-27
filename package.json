@@ -30,7 +30,6 @@
     "webpack-dev-server": "^3.10.1"
   },
   "dependencies": {
-    "pixi.js": "^5.2.0",
-    "planck-js": "^0.3.10"
+    "pixi.js": "^5.2.0"
   }
 }

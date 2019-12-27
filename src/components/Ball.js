@@ -1,17 +1,21 @@
 import * as PIXI from 'pixi.js';
+import { Point } from '../geom';
 
 const _defaults = {
   radius: 6
 };
 
 const makeBall = (x, y, radius) => {
-  const ball = new PIXI.Sprite();
+  const sprite = new PIXI.Sprite();
   const gfx = new PIXI.Graphics();
   gfx.beginFill(0x418261);
   gfx.drawCircle(x, y, radius);
   gfx.endFill();
-  ball.addChild(gfx);
-  return ball;
+  sprite.addChild(gfx);
+  return {
+    sprite,
+    gfx
+  };
 };
 
 export default class Ball {
@@ -20,8 +24,17 @@ export default class Ball {
   } = _defaults) {
     this.corona = corona;
     this.velocity = corona.paddle.centripetal();
-    this.ball = makeBall(corona.paddle.x(), corona.paddle.y(), radius);
-    corona.container.addChild(this.ball);
+    const ball = makeBall(corona.paddle.x(), corona.paddle.y(), radius);
+    this.sprite = ball.sprite;
+    this.gfx = ball.gfx;
+    this.pos = new Point();
+    corona.container.addChild(this.sprite);
+  }
+
+  position (x, y) {
+    if (!arguments.length) return new Point(this.sprite.position);
+    if (x) this.sprite.position.x = x;
+    if (y) this.sprite.position.y = y;
   }
 
   destroy () {
@@ -31,7 +44,7 @@ export default class Ball {
   }
 
   run (delta) {
-    this.ball.position.x += this.velocity.x;
-    this.ball.position.y += this.velocity.y;
+    this.sprite.position.x += this.velocity.x;
+    this.sprite.position.y += this.velocity.y;
   }
 }
