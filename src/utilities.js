@@ -4,6 +4,15 @@ const _clampAngle = (angle) => {
   return angle;
 };
 
+const _uuid = () => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, char => {
+    const replace = Math.random() * 16 | 0;
+    const output = (char === 'x') ? replace : (replace & 0x3 | 0x8);
+    return output.toString(16);
+  });
+};
+
 export default {
-  clampAngle: _clampAngle
+  clampAngle: _clampAngle,
+  uuid: _uuid
 };
