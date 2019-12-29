@@ -6,10 +6,11 @@ import Ball from './Ball';
 
 const _defaults = {
   radius: 450,
+  width: 20,
   arc: 15
 };
 
-const makePaddle = (radius, arc) => {
+const makePaddle = (radius, width, arc) => {
   const sprite = new PIXI.Sprite();
   const gfx = new PIXI.Graphics();
   const radStart = (Math.PI / 180) * (C.PADDLE_START_ANGLE - (arc / 2));
@@ -17,8 +18,8 @@ const makePaddle = (radius, arc) => {
   gfx.beginFill(0xf1f2f1);
   gfx.arc(0, 0, radius, radStart, radEnd);
   gfx.lineTo((Math.cos(radEnd) * radius), (Math.sin(radEnd) * radius));
-  gfx.arc(0, 0, radius + 10, radEnd, radStart, true);
-  gfx.lineTo((Math.cos(radStart) * (radius + 10)), (Math.sin(radStart) * (radius + 10)));
+  gfx.arc(0, 0, radius + width, radEnd, radStart, true);
+  gfx.lineTo((Math.cos(radStart) * (radius + width)), (Math.sin(radStart) * (radius + width)));
   gfx.endFill();
   sprite.addChild(gfx);
   return {
@@ -28,12 +29,15 @@ const makePaddle = (radius, arc) => {
 };
 
 export default class Paddle {
-  constructor (corona, {
+  constructor (corona, world, {
     radius = _defaults.radius,
+    width = _defaults.width,
     arc = _defaults.arc
   } = _defaults) {
     this.corona = corona;
+    this.world = world;
     this.radius = radius;
+    this.width = width;
     this.velocity = 0;
     this.acc = 0.1;
     this.dec = 0.2;
@@ -41,7 +45,7 @@ export default class Paddle {
     this.left = false;
     this.right = false;
     this.accelerating = false;
-    const paddle = makePaddle(radius, arc);
+    const paddle = makePaddle(radius, width, arc);
     this.sprite = paddle.sprite;
     this.gfx = paddle.gfx;
     corona.paddle = this;
@@ -64,8 +68,12 @@ export default class Paddle {
       this.right = false;
     });
     this.controller.onPress('space', () => {
-      if (this.ball) this.ball.destroy();
+      if (this.ball) {
+        this.world.remove(this.ball.bounds, 'ball');
+        this.ball.destroy();
+      }
       this.ball = new Ball(corona, this.world);
+      this.world.add(this.ball.bounds, 'ball');
     });
   }
 

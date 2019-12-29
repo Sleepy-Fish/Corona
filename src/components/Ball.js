@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { Point } from '../geom';
+import { Point, Circle } from '../geom';
 
 const _defaults = {
   radius: 6
@@ -28,6 +28,7 @@ export default class Ball {
     this.sprite = ball.sprite;
     this.gfx = ball.gfx;
     this.pos = new Point();
+    this.bounds = new Circle(this.pos, radius);
     corona.container.addChild(this.sprite);
   }
 
@@ -46,5 +47,6 @@ export default class Ball {
   run (delta) {
     this.sprite.position.x += this.velocity.x;
     this.sprite.position.y += this.velocity.y;
+    this.bounds.shift(this.velocity);
   }
 }
