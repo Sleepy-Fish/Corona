@@ -27,6 +27,7 @@ export default class GameState extends State {
 
   resize (x, y) {
     this.corona.position(x / 2, y / 2);
+    this.paddle.position(x / 2, y / 2);
   }
 
   activate () {

@@ -14,12 +14,11 @@ export default class Ball extends Component {
     radius = _defaults.radius
   } = _defaults) {
     super(container, world);
-    this.container = container;
     this.radius = radius;
     this.makeSprite();
+    this.shape = new Circle(position, this.radius);
     this.position(position);
     this.velocity(velocity);
-    this.shape = new Circle(position, this.radius);
     // TODO: Remove this
     this.shape.debug(this.container, 0xff0000);
   }

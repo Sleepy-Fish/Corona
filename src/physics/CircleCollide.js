@@ -21,18 +21,15 @@ export default class CircleCollide extends Collide {
     if (distance > (this.actor.radius + other.radius)) {
       // actor is outside of interactor
       this.states[other.id] = 'outside';
-      console.log('outside');
       if (last !== 'outside') this.emit('leave', this.actor, other);
     } else if (distance < Math.abs(this.actor.radius - other.radius)) {
       // actor is entirely inside interactor
       this.states[other.id] = 'inside';
-      console.log('inside');
       if (last !== 'inside') this.emit('enter', this.actor, other);
-    } else if (last !== 'colliding') {
+    } else {
       // actor is crossing borders with interactor
       this.states[other.id] = 'colliding';
-      console.log('collide');
-      if (last !== 'collide') this.emit('collide', this.actor, other);
+      if (last !== 'colliding') this.emit('collide', this.actor, other);
     }
   }
 }
