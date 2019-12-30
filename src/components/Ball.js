@@ -1,52 +1,35 @@
-import * as PIXI from 'pixi.js';
-import { Point, Circle } from '../geom';
+import { Circle, Point, Vector } from '../geom';
+import Component from './Component';
 
 const _defaults = {
+  position: Point.Zero(),
+  velocity: Vector.Zero(),
   radius: 6
 };
 
-const makeBall = (x, y, radius) => {
-  const sprite = new PIXI.Sprite();
-  const gfx = new PIXI.Graphics();
-  gfx.beginFill(0x418261);
-  gfx.drawCircle(x, y, radius);
-  gfx.endFill();
-  sprite.addChild(gfx);
-  return {
-    sprite,
-    gfx
-  };
-};
-
-export default class Ball {
-  constructor (corona, {
+export default class Ball extends Component {
+  constructor (container, world, {
+    position = _defaults.position,
+    velocity = _defaults.velocity,
     radius = _defaults.radius
   } = _defaults) {
-    this.corona = corona;
-    this.velocity = corona.paddle.centripetal();
-    const ball = makeBall(corona.paddle.x(), corona.paddle.y(), radius);
-    this.sprite = ball.sprite;
-    this.gfx = ball.gfx;
-    this.pos = new Point();
-    this.bounds = new Circle(this.pos, radius);
-    corona.container.addChild(this.sprite);
+    super(container, world);
+    this.container = container;
+    this.radius = radius;
+    this.makeSprite();
+    this.position(position);
+    this.velocity(velocity);
+    this.shape = new Circle(position, this.radius);
+    // TODO: Remove this
+    this.shape.debug(this.container, 0xff0000);
   }
 
-  position (x, y) {
-    if (!arguments.length) return new Point(this.sprite.position);
-    if (x) this.sprite.position.x = x;
-    if (y) this.sprite.position.y = y;
-  }
-
-  destroy () {
-    this.run = () => {};
-    this.corona.container.removeChild(this.ball);
-    return this;
-  }
-
-  run (delta) {
-    this.sprite.position.x += this.velocity.x;
-    this.sprite.position.y += this.velocity.y;
-    this.bounds.shift(this.velocity);
+  makeSprite () {
+    super.makeSprite();
+    this.sprite.x = this.pos.x;
+    this.sprite.y = this.pos.y;
+    this.gfx.beginFill(0x418261);
+    this.gfx.drawCircle(0, 0, this.radius);
+    this.gfx.endFill();
   }
 }

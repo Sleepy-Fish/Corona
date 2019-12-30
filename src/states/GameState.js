@@ -1,8 +1,7 @@
 // import C from '../constants.json';
 import * as PIXI from 'pixi.js';
 import State from './State';
-import { Point, Circle } from '../geom';
-import { World, CircleCollide } from '../physics';
+import { World } from '../physics';
 import { Corona, Paddle } from '../components';
 
 export default class GameState extends State {
@@ -16,19 +15,14 @@ export default class GameState extends State {
 
     this.world = new World();
     this.corona = new Corona(this.scene);
-    this.paddle = new Paddle(this.corona, this.world);
-
-    this.well = new CircleCollide(this.world, new Circle(Point.Zero(), this.paddle.radius), 'ball');
-    this.well.on('enter', (actor, interactor) => { console.info('ENTER: ', actor, interactor); });
-    this.well.on('leave', (actor, interactor) => { console.info('LEAVE: ', actor, interactor); });
-    this.well.on('collide', (actor, interactor) => { console.info('COLLIDE: ', actor, interactor); });
+    this.paddle = new Paddle(this.scene, this.world);
   }
 
   run (delta) {
     super.run(delta);
     this.fpsText.text = Math.round(this.app.ticker.FPS);
+    this.corona.run(delta);
     this.paddle.run(delta);
-    this.well.run(delta);
   }
 
   resize (x, y) {

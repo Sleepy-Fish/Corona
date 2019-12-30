@@ -1,3 +1,5 @@
+import Point from './Point';
+
 export default class Vector {
   constructor (x, y) {
     this.x = x || 0;
@@ -117,6 +119,10 @@ export default class Vector {
   }
 
   // ** --- Vector Utility Functions --- ** //
+  toPoint () {
+    return Point(this.x, this.y);
+  }
+
   toString () {
     return `Vector[${this.x}, ${this.y}]`;
   }

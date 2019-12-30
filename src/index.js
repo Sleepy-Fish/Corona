@@ -11,6 +11,7 @@ const app = new PIXI.Application({
   height: window.innerHeight
 });
 document.body.appendChild(app.view);
+window.app = app;
 
 window.addEventListener('resize', () => {
   app.renderer.resize(window.innerWidth, window.innerHeight);

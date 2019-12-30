@@ -1,3 +1,5 @@
+import Vector from './Vector';
+
 export default class Point {
   constructor (xOrPoint, y) {
     if (typeof xOrPoint === 'object') {
@@ -16,11 +18,15 @@ export default class Point {
   // ** --- Point Geometry Math Functions --- ** //
   distance (point) {
     const dx = point.x - this.x;
-    const dy = point.y = this.y;
+    const dy = point.y - this.y;
     return Math.sqrt((dx * dx) + (dy * dy));
   }
 
   // ** --- Point Utility Functions --- ** //
+  toVector () {
+    return new Vector(this.x, this.y);
+  }
+
   toString () {
     return `Point[${this.x}, ${this.y}]`;
   }

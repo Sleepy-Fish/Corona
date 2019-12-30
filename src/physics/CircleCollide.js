@@ -26,7 +26,7 @@ export default class CircleCollide extends Collide {
     } else if (distance < Math.abs(this.actor.radius - other.radius)) {
       // actor is entirely inside interactor
       this.states[other.id] = 'inside';
-      console.log(other.position());
+      console.log('inside');
       if (last !== 'inside') this.emit('enter', this.actor, other);
     } else if (last !== 'colliding') {
       // actor is crossing borders with interactor
