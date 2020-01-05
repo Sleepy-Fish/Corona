@@ -1,4 +1,4 @@
-// import C from '../constants.json';
+import C from '../constants.json';
 import U from '../utilities';
 // import * as PIXI from 'pixi.js';
 import { Controller } from '../input';
@@ -53,27 +53,37 @@ export default class Paddle extends Component {
       this.rightKeyDown = false;
     });
     this.controller.onPress('space', () => {
-      if (this.ball) {
-        this.world.remove(this.ball.shape, 'ball');
-        this.ball.destroy();
-      }
-      this.ball = new Ball(this.container, this.world, {
-        position: this.spawn(),
-        velocity: this.centripetal()
-      });
-      this.world.add(this.ball.shape, 'ball');
+      this.destroyBall(this.ball);
+      this.ball = this.makeBall();
     });
 
     this.well = new CircleCollide(this.world, this.shape, 'ball');
-    this.well.on('enter', (actor, interactor) => { /* console.info('ENTER: ', actor, interactor); */ });
-    this.well.on('leave', (actor, interactor) => { /* console.info('LEAVE: ', actor, interactor); */ });
+    this.well.on('leave', (actor, interactor) => {
+      if (this.ball.shape.id === interactor.id) this.destroyBall(this.ball);
+    });
     this.well.on('collide', (actor, interactor) => {
       const deltaAngle = actor.angle() - this.position().angle(interactor.position());
-      if (Math.abs(deltaAngle) < (this.arc / 2) + 2) {
+      if (Math.abs(deltaAngle) < (this.arc / 2) + C.PADDLE_BOUNCE_LEEWAY) {
         const bounce = this.ball.velocity().times(-1).rotation(-deltaAngle);
         this.ball.velocity(bounce);
       }
     });
+  }
+
+  makeBall () {
+    const newBall = new Ball(this.container, this.world, {
+      position: this.spawn(),
+      velocity: this.centripetal()
+    });
+    this.world.add(newBall.shape, 'ball');
+    return newBall;
+  }
+
+  destroyBall (ball) {
+    if (ball instanceof Ball) {
+      this.world.remove(ball.shape, 'ball');
+      ball.destroy();
+    }
   }
 
   makeSprite () {

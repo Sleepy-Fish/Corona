@@ -84,7 +84,6 @@ export default class Spacial {
     if (!arguments.length) return U.clampAngle(this.ang);
     this.ang = U.clampAngle(degree);
     if (changeVelocity) {
-      console.log('BING');
       this.vel.angle(degree);
     }
   }
