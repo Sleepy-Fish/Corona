@@ -64,7 +64,9 @@ export default class Paddle extends Component {
     this.well.on('collide', (actor, interactor) => {
       const deltaAngle = actor.angle() - this.position().angle(interactor.position());
       if (Math.abs(deltaAngle) < (this.arc / 2) + C.PADDLE_BOUNCE_LEEWAY) {
-        const bounce = this.ball.velocity().times(-1).rotation(-deltaAngle);
+        const bounce = this.ball.velocity()
+          .times(-1)
+          .rotation(-deltaAngle);
         this.ball.velocity(bounce);
       }
     });

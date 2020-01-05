@@ -101,11 +101,14 @@ export default class Corona extends Component {
       if (C.DEBUG) innerShape.debug(this.container, 0x00ffff);
       const innerCollide = new CircleCollide(this.world, innerShape, 'ball');
       innerCollide.on('collide-inner', (actor, interactor) => {
-        const x = actor.position().angle(interactor.position());
+        const angle = actor.position().angle(interactor.position());
         for (const block of actor.blocks.filter(b => !b.destroyed)) {
-          if (x >= block.start && x <= block.end) {
+          if (angle >= block.start && angle <= block.end) {
             block.destroy();
-            const bounce = interactor.parent.velocity().times(-1);
+            const variance = (Math.random() * C.BALL_BOUNCE_VARIANCE * 2) - C.BALL_BOUNCE_VARIANCE;
+            const bounce = interactor.parent.velocity()
+              .times(-1)
+              .rotation(variance);
             interactor.parent.velocity(bounce);
             break;
           }
@@ -118,11 +121,14 @@ export default class Corona extends Component {
       if (C.DEBUG) outerShape.debug(this.container, 0xff00ff);
       const outerCollide = new CircleCollide(this.world, outerShape, 'ball');
       outerCollide.on('collide-outer', (actor, interactor) => {
-        const x = actor.position().angle(interactor.position());
+        const angle = actor.position().angle(interactor.position());
         for (const block of actor.blocks.filter(b => !b.destroyed)) {
-          if (x >= block.start && x <= block.end) {
+          if (angle >= block.start && angle <= block.end) {
             block.destroy();
-            const bounce = interactor.parent.velocity().times(-1);
+            const variance = (Math.random() * C.BALL_BOUNCE_VARIANCE * 2) - C.BALL_BOUNCE_VARIANCE;
+            const bounce = interactor.parent.velocity()
+              .times(-1)
+              .rotation(variance);
             interactor.parent.velocity(bounce);
             break;
           }
