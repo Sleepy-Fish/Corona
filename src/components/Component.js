@@ -48,7 +48,7 @@ export default class Component extends Spacial {
   x (val) {
     if (!arguments.length) return this.pos.x;
     super.x(val);
-    this.shape.x(this.pos.y);
+    this.shape.x(this.pos.x);
     this.sprite.position.x = this.pos.x;
   }
 
