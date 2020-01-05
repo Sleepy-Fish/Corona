@@ -1,3 +1,4 @@
+import C from '../constants.json';
 import { Circle, Point, Vector } from '../geom';
 import Component from './Component';
 
@@ -16,11 +17,11 @@ export default class Ball extends Component {
     super(container, world);
     this.radius = radius;
     this.makeSprite();
-    this.shape = new Circle(position, this.radius);
+    this.shape = new Circle(this, position, this.radius);
     this.position(position);
     this.velocity(velocity);
     // TODO: Remove this
-    this.shape.debug(this.container, 0xff0000);
+    if (C.DEBUG) this.shape.debug(this.container, 0xff0000);
   }
 
   makeSprite () {

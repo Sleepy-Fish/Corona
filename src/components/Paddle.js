@@ -28,9 +28,9 @@ export default class Paddle extends Component {
     this.maxRotation = 5;
     this.makeSprite();
     this.position(position);
-    this.shape = new Circle(position, this.radius);
+    this.shape = new Circle(this, position, this.radius);
     // TODO: Remove this
-    this.shape.debug(this.container, 0x00ff00);
+    if (C.DEBUG) this.shape.debug(this.container, 0x00ff00);
 
     this.leftKeyDown = false;
     this.rightKeyDown = false;
@@ -59,7 +59,7 @@ export default class Paddle extends Component {
 
     this.well = new CircleCollide(this.world, this.shape, 'ball');
     this.well.on('leave', (actor, interactor) => {
-      if (this.ball.shape.id === interactor.id) this.destroyBall(this.ball);
+      if (this.ball === interactor.parent) this.destroyBall(this.ball);
     });
     this.well.on('collide', (actor, interactor) => {
       const deltaAngle = actor.angle() - this.position().angle(interactor.position());

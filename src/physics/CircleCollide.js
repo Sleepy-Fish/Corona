@@ -31,6 +31,8 @@ export default class CircleCollide extends Collide {
       // actor is crossing borders with interactor
       this.states[other.id] = 'colliding';
       if (last !== 'colliding') this.emit('collide', this.actor, other);
+      if (last === 'inside') this.emit('collide-inner', this.actor, other);
+      if (last === 'outside') this.emit('collide-outer', this.actor, other);
     }
   }
 }

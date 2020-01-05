@@ -1,4 +1,5 @@
 {
+  "DEBUG": true,
   "SCALE": 2,
   "PADDLE_START_ANGLE": 270,
   "PADDLE_BOUNCE_LEEWAY": 2

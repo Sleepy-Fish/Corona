@@ -14,7 +14,7 @@ export default class GameState extends State {
     this.scene.addChild(this.testText);
 
     this.world = new World();
-    this.corona = new Corona(this.scene);
+    this.corona = new Corona(this.scene, this.world);
     this.paddle = new Paddle(this.scene, this.world);
   }
 
@@ -22,7 +22,7 @@ export default class GameState extends State {
     super.run(delta);
     this.corona.run(delta);
     this.paddle.run(delta);
-    this.testText.text = this.paddle.angle().toFixed();
+    this.testText.text = this.app.ticker.FPS.toFixed();
   }
 
   resize (x, y) {

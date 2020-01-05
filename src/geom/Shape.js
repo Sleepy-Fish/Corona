@@ -7,10 +7,12 @@ import U from '../utilities';
 import Spacial from './Spacial';
 
 export default class Shape extends Spacial {
-  constructor () {
+  constructor (parent, position) {
     super();
     this.id = U.uuid();
     this.type = 'shape';
+    this.parent = parent;
+    this.position(position);
     this.awake = true;
   }
 

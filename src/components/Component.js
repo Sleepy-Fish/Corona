@@ -12,7 +12,7 @@ export default class Component extends Spacial {
     super();
     this.container = container;
     this.world = world;
-    this.shape = new Shape();
+    this.shape = new Shape(this);
     this.dynamic = true;
   }
 
