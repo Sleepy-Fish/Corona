@@ -1,3 +1,4 @@
+import U from '../utilities';
 import Vector from './Vector';
 
 export default class Point {
@@ -20,6 +21,18 @@ export default class Point {
     const dx = point.x - this.x;
     const dy = point.y - this.y;
     return Math.sqrt((dx * dx) + (dy * dy));
+  }
+
+  // In Radians
+  direction (point) {
+    const dx = point.x - this.x;
+    const dy = point.y - this.y;
+    return Math.atan2(dy, dx);
+  }
+
+  // In Degrees
+  angle (point) {
+    return U.toDeg(this.direction(point));
   }
 
   // ** --- Point Utility Functions --- ** //

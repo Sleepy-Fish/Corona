@@ -1,3 +1,4 @@
+import U from '../utilities';
 import { Point } from '../geom';
 import Component from './Component';
 
@@ -42,8 +43,8 @@ export default class Corona extends Component {
     this.gfx.drawCircle(0, 0, this.core - this.layerGutter);
     this.gfx.endFill();
     const makeBlock = (r1, r2, start, end) => {
-      const radStart = (Math.PI / 180) * start;
-      const radEnd = (Math.PI / 180) * end;
+      const radStart = U.toRad(start);
+      const radEnd = U.toRad(end);
       this.gfx.beginFill(0x8fcf7f);
       this.gfx.arc(0, 0, r1, radStart, radEnd);
       this.gfx.lineTo((Math.cos(radEnd) * r1), (Math.sin(radEnd) * r1));

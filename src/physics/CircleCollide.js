@@ -8,6 +8,7 @@ export default class CircleCollide extends Collide {
   }
 
   check (other) {
+    super.check(other);
     switch (other.type) {
       case 'circle':
         this.checkCircle(other);

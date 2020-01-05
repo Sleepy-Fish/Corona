@@ -1,3 +1,4 @@
+import U from '../utilities';
 import Point from './Point';
 
 export default class Vector {
@@ -43,8 +44,8 @@ export default class Vector {
 
   // In Degrees
   angle (degrees) {
-    if (!arguments.length) return this.direction() * (180 / Math.PI);
-    return this.direction(degrees * (Math.PI / 180));
+    if (!arguments.length) return U.toDeg(this.direction());
+    return this.direction(U.toRad(degrees));
   }
 
   magnitude (magnitude) {
@@ -101,21 +102,36 @@ export default class Vector {
   }
 
   // ** --- Vector Geometry Math Functions --- ** //
-
-  dot (vector) {
-    return Math.abs(this.magnitude()) * Math.abs(this.magnitude()) * Math.cos(this.direction() - vector.direction());
+  // Rotates this vector by a degree without effecting magnitude
+  rotate (degree) {
+    const r = this.angle();
+    this.angle(r + degree);
+    return this;
   }
 
-  normal () {
-    const direction = this.direction();
-    return new Vector(Math.cos(direction), Math.sin(direction));
+  // Returns a new vector with applied degree rotation without effecting magnitude
+  rotation (degree) {
+    const r = this.angle();
+    return this.copy().angle(r + degree);
   }
 
+  // Sets this vectors magnitude to 1
   normalize () {
     const direction = this.direction();
     this.x = Math.cos(direction);
     this.y = Math.sin(direction);
     return this;
+  }
+
+  // Returns a new vector with direction but magnitude of 1
+  normal () {
+    const direction = this.direction();
+    return new Vector(Math.cos(direction), Math.sin(direction));
+  }
+
+  // Just read online what dot product of vectors is.
+  dot (vector) {
+    return Math.abs(this.magnitude()) * Math.abs(this.magnitude()) * Math.cos(this.direction() - vector.direction());
   }
 
   // ** --- Vector Utility Functions --- ** //

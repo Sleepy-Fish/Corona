@@ -1,4 +1,5 @@
-import C from '../constants.json';
+// import C from '../constants.json';
+import U from '../utilities';
 // import * as PIXI from 'pixi.js';
 import { Controller } from '../input';
 import { Vector, Circle, Point } from '../geom';
@@ -64,15 +65,21 @@ export default class Paddle extends Component {
     });
 
     this.well = new CircleCollide(this.world, this.shape, 'ball');
-    this.well.on('enter', (actor, interactor) => { console.info('ENTER: ', actor, interactor); });
-    this.well.on('leave', (actor, interactor) => { console.info('LEAVE: ', actor, interactor); });
-    this.well.on('collide', (actor, interactor) => { console.info('COLLIDE: ', actor, interactor); });
+    this.well.on('enter', (actor, interactor) => { /* console.info('ENTER: ', actor, interactor); */ });
+    this.well.on('leave', (actor, interactor) => { /* console.info('LEAVE: ', actor, interactor); */ });
+    this.well.on('collide', (actor, interactor) => {
+      const deltaAngle = actor.angle() - this.position().angle(interactor.position());
+      if (Math.abs(deltaAngle) < (this.arc / 2) + 2) {
+        const bounce = this.ball.velocity().times(-1).rotation(-deltaAngle);
+        this.ball.velocity(bounce);
+      }
+    });
   }
 
   makeSprite () {
     super.makeSprite();
-    const radStart = (Math.PI / 180) * (C.PADDLE_START_ANGLE - (this.arc / 2));
-    const radEnd = (Math.PI / 180) * (C.PADDLE_START_ANGLE + (this.arc / 2));
+    const radStart = U.toRad(this.angle() - (this.arc / 2));
+    const radEnd = U.toRad(this.angle() + (this.arc / 2));
     this.gfx.beginFill(0xf1f2f1);
     this.gfx.arc(0, 0, this.radius, radStart, radEnd);
     this.gfx.lineTo((Math.cos(radEnd) * this.radius), (Math.sin(radEnd) * this.radius));
@@ -82,7 +89,7 @@ export default class Paddle extends Component {
   }
 
   spawn () {
-    const radians = (this.angle() * (Math.PI / 180)) - (Math.PI / 2);
+    const radians = U.toRad(this.angle());
     return new Point(
       this.x() + (Math.cos(radians) * (this.radius - 20)),
       this.y() + (Math.sin(radians) * (this.radius - 20))
@@ -90,7 +97,7 @@ export default class Paddle extends Component {
   }
 
   centripetal () {
-    return Vector.One().angle(this.ang + 90).magnitude(5);
+    return Vector.One().angle(this.ang + 180).magnitude(5);
   }
 
   run (delta) {
