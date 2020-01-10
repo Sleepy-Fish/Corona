@@ -7,11 +7,9 @@
 import U from '../utilities';
 import * as PIXI from 'pixi.js';
 import { Point, Vector } from '.';
-import { EventEmitter } from 'events';
 
-export default class Spacial extends EventEmitter {
+export default class Spacial {
   constructor (parent = null) {
-    super();
     this.id = U.uuid();
     this.pos = Point.Zero();
     this.vel = Vector.Zero();

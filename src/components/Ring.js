@@ -70,13 +70,12 @@ export default class Ring extends Circle {
     if (C.DEBUG) this.inner.makeDebug(this.container, 0x00ffff);
     if (C.DEBUG) this.outer.makeDebug(this.container, 0xff00ff);
 
-    const total = 360 - (this.segmentGutter * this.segments);
+    const total = 360 - (this.gutter * this.segments);
     const step = Math.floor(total / this.segments);
 
     for (let s = 0; s < this.segments; s++) {
       const block = new Block(
         container,
-        this.position(),
         this.inner.radius,
         this.outer.radius,
         (s * step) + (s * this.gutter),
