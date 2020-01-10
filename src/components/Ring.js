@@ -66,9 +66,10 @@ export default class Ring extends Circle {
 
   makeSprite (container) {
     super.makeSprite(container);
-
-    if (C.DEBUG) this.inner.makeDebug(this.container, 0x00ffff);
-    if (C.DEBUG) this.outer.makeDebug(this.container, 0xff00ff);
+    if (C.DEBUG) {
+      this.inner.makeDebug(this.container, 0x00ffff);
+      this.outer.makeDebug(this.container, 0xff00ff);
+    }
 
     const total = 360 - (this.gutter * this.segments);
     const step = Math.floor(total / this.segments);
@@ -96,14 +97,14 @@ export default class Ring extends Circle {
     this.innerWatcher = world.watcher(this.inner, 'ball');
     this.innerWatcher.on('collide-inner', (actor, interactor) => {
       const angle = actor.position().angle(interactor.position());
-      for (const block of actor.blocks.filter(b => !b.destroyed)) {
+      for (const block of actor.parent.blocks.filter(b => !b.destroyed)) {
         if (angle >= block.start && angle <= block.end) {
           block.destroy();
           const variance = (Math.random() * C.BALL_BOUNCE_VARIANCE * 2) - C.BALL_BOUNCE_VARIANCE;
-          const bounce = interactor.parent.velocity()
+          const bounce = interactor.velocity()
             .times(-1)
             .rotation(variance);
-          interactor.parent.velocity(bounce);
+          interactor.velocity(bounce);
           break;
         }
       }
@@ -111,16 +112,16 @@ export default class Ring extends Circle {
     // Outer Ring
     this.world.add(this.outer, this.layer);
     this.outerWatcher = world.watcher(this.outer, 'ball');
-    this.outerWatcher.on('collider-outer', (actor, interactor) => {
+    this.outerWatcher.on('collide-outer', (actor, interactor) => {
       const angle = actor.position().angle(interactor.position());
-      for (const block of actor.blocks.filter(b => !b.destroyed)) {
+      for (const block of actor.parent.blocks.filter(b => !b.destroyed)) {
         if (angle >= block.start && angle <= block.end) {
           block.destroy();
           const variance = (Math.random() * C.BALL_BOUNCE_VARIANCE * 2) - C.BALL_BOUNCE_VARIANCE;
-          const bounce = interactor.parent.velocity()
+          const bounce = interactor.velocity()
             .times(-1)
             .rotation(variance);
-          interactor.parent.velocity(bounce);
+          interactor.velocity(bounce);
           break;
         }
       }

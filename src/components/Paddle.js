@@ -53,19 +53,15 @@ export default class Paddle extends Circle {
   }
 
   makeBall () {
-    const newBall = new Ball(this.container, this.world, {
-      position: this.spawn(),
-      velocity: this.centripetal()
-    });
-    this.world.add(newBall.shape, 'ball');
-    return newBall;
+    return new Ball()
+      .makeSprite(this.container)
+      .makeCollidable(this.world, 'ball')
+      .position(this.spawn())
+      .velocity(this.centripetal());
   }
 
   destroyBall (ball) {
-    if (ball instanceof Ball) {
-      this.world.remove(ball.shape, 'ball');
-      ball.destroy();
-    }
+    if (ball instanceof Ball) ball.destroy();
   }
 
   makeSprite (container) {
@@ -86,15 +82,15 @@ export default class Paddle extends Circle {
     super.makeCollidable(world);
     this.watcher = world.watcher(this, 'ball');
     this.watcher.on('leave', (actor, interactor) => {
-      if (this.ball === interactor.parent) this.destroyBall(this.ball);
+      if (this.ball === interactor) this.destroyBall(this.ball);
     });
     this.watcher.on('collide', (actor, interactor) => {
       const deltaAngle = actor.angle() - this.position().angle(interactor.position());
       if (Math.abs(deltaAngle) < (this.arc / 2) + C.PADDLE_BOUNCE_LEEWAY) {
-        const bounce = this.ball.velocity()
+        const bounce = interactor.velocity()
           .times(-1)
           .rotation(-deltaAngle);
-        this.ball.velocity(bounce);
+        interactor.velocity(bounce);
       }
     });
     return this;

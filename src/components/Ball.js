@@ -8,24 +8,16 @@ const _defaults = {
 };
 
 export default class Ball extends Circle {
-  constructor (container, world, {
-    position = _defaults.position,
-    velocity = _defaults.velocity,
+  constructor ({
     radius = _defaults.radius
   } = _defaults) {
     super();
     this.radius = radius;
-    this
-      .makeSprite(container)
-      .makeCollidable(world)
-      .position(position)
-      .velocity(velocity);
-    // TODO: Remove this
-    if (C.DEBUG) this.makeDebug(this.container, 0xff0000);
   }
 
   makeSprite (container) {
     super.makeSprite(container);
+    if (C.DEBUG) this.makeDebug(this.container, 0xff0000);
     this.sprite.x = this.pos.x;
     this.sprite.y = this.pos.y;
     this.gfx.beginFill(0x418261);
