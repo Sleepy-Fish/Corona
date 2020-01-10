@@ -14,8 +14,8 @@ export default class GameState extends State {
     this.scene.addChild(this.testText);
 
     this.world = new World();
-    this.corona = new Corona(this.scene, this.world);
-    this.paddle = new Paddle(this.scene, this.world);
+    this.corona = new Corona().makeSprite(this.scene).makeCollidable(this.world);
+    this.paddle = new Paddle().makeSprite(this.scene).makeCollidable(this.world);
   }
 
   run (delta) {

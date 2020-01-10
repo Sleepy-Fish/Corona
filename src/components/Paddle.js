@@ -3,9 +3,7 @@ import U from '../utilities';
 // import * as PIXI from 'pixi.js';
 import { Controller } from '../input';
 import { Vector, Circle, Point } from '../geom';
-import { CircleCollide } from '../physics';
 import Ball from './Ball';
-import Component from './Component.js';
 
 const _defaults = {
   position: new Point(window.innerWidth / 2, window.innerHeight / 2),
@@ -14,7 +12,7 @@ const _defaults = {
   arc: 15
 };
 
-export default class Paddle extends Component {
+export default class Paddle extends Circle {
   constructor (container, world, {
     position = _defaults.position,
     radius = _defaults.radius,
@@ -26,11 +24,7 @@ export default class Paddle extends Component {
     this.width = width;
     this.arc = arc;
     this.maxRotation = 5;
-    this.makeSprite();
     this.position(position);
-    this.shape = new Circle(this, position, this.radius);
-    // TODO: Remove this
-    if (C.DEBUG) this.shape.debug(this.container, 0x00ff00);
 
     this.leftKeyDown = false;
     this.rightKeyDown = false;
@@ -56,20 +50,6 @@ export default class Paddle extends Component {
       this.destroyBall(this.ball);
       this.ball = this.makeBall();
     });
-
-    this.well = new CircleCollide(this.world, this.shape, 'ball');
-    this.well.on('leave', (actor, interactor) => {
-      if (this.ball === interactor.parent) this.destroyBall(this.ball);
-    });
-    this.well.on('collide', (actor, interactor) => {
-      const deltaAngle = actor.angle() - this.position().angle(interactor.position());
-      if (Math.abs(deltaAngle) < (this.arc / 2) + C.PADDLE_BOUNCE_LEEWAY) {
-        const bounce = this.ball.velocity()
-          .times(-1)
-          .rotation(-deltaAngle);
-        this.ball.velocity(bounce);
-      }
-    });
   }
 
   makeBall () {
@@ -88,8 +68,9 @@ export default class Paddle extends Component {
     }
   }
 
-  makeSprite () {
-    super.makeSprite();
+  makeSprite (container) {
+    super.makeSprite(container);
+    if (C.DEBUG) this.makeDebug(this.container, 0x00ff00);
     const radStart = U.toRad(this.angle() - (this.arc / 2));
     const radEnd = U.toRad(this.angle() + (this.arc / 2));
     this.gfx.beginFill(0xf1f2f1);
@@ -98,6 +79,25 @@ export default class Paddle extends Component {
     this.gfx.arc(0, 0, this.radius + this.width, radEnd, radStart, true);
     this.gfx.lineTo((Math.cos(radStart) * (this.radius + this.width)), (Math.sin(radStart) * (this.radius + this.width)));
     this.gfx.endFill();
+    return this;
+  }
+
+  makeCollidable (world) {
+    super.makeCollidable(world);
+    this.watcher = world.watcher(this, 'ball');
+    this.watcher.on('leave', (actor, interactor) => {
+      if (this.ball === interactor.parent) this.destroyBall(this.ball);
+    });
+    this.watcher.on('collide', (actor, interactor) => {
+      const deltaAngle = actor.angle() - this.position().angle(interactor.position());
+      if (Math.abs(deltaAngle) < (this.arc / 2) + C.PADDLE_BOUNCE_LEEWAY) {
+        const bounce = this.ball.velocity()
+          .times(-1)
+          .rotation(-deltaAngle);
+        this.ball.velocity(bounce);
+      }
+    });
+    return this;
   }
 
   spawn () {
@@ -125,6 +125,6 @@ export default class Paddle extends Component {
     }
     super.run(delta);
     if (this.ball) this.ball.run(delta);
-    this.well.run(delta);
+    this.watcher.run(delta);
   }
 }
