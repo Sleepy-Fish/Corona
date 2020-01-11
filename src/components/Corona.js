@@ -37,12 +37,11 @@ export default class Corona extends Circle {
   }
 
   position (xOrPoint, y) {
-    if (!arguments.length) return this.pos.copy();
-    super.position(xOrPoint, y);
-    for (const ring of this.rings) {
-      ring.position(this.pos);
-    }
-    return this;
+    return super.position(xOrPoint, y, () => {
+      for (const ring of this.rings) {
+        ring.position(this.pos);
+      }
+    });
   }
 
   run (delta) {

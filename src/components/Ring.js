@@ -26,14 +26,13 @@ export default class Ring extends Circle {
   }
 
   position (xOrPoint, y) {
-    if (!arguments.length) return this.pos.copy();
-    super.position(xOrPoint, y);
-    this.inner.position(xOrPoint, y);
-    this.outer.position(xOrPoint, y);
-    for (const block of this.blocks.filter(b => !b.destroyed)) {
-      block.position(this.pos);
-    }
-    return this;
+    return super.position(xOrPoint, y, () => {
+      this.inner.position(xOrPoint, y);
+      this.outer.position(xOrPoint, y);
+      for (const block of this.blocks.filter(b => !b.destroyed)) {
+        block.position(this.pos);
+      }
+    });
   }
 
   run (delta) {

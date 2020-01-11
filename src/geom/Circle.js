@@ -18,5 +18,6 @@ export default class Circle extends Spacial {
     this.debug.x = this.x();
     this.debug.y = this.y();
     container.addChild(this.debug);
+    return this;
   }
 }
