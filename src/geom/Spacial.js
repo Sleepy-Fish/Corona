@@ -43,6 +43,7 @@ export default class Spacial {
   destroy () {
     this.run = () => {};
     if (this.sprite) this.container.removeChild(this.sprite);
+    if (this.debug) this.container.removeChild(this.debug);
     if (this.world) this.world.remove(this, this.layer);
     return this;
   }
@@ -80,15 +81,13 @@ export default class Spacial {
 
   x (val) {
     if (!arguments.length) return this.pos.x;
-    this.pos.x = val;
-    if (this.sprite) this.sprite.position.x = this.pos.x;
+    this.position(val, this.pos.y);
     return this;
   }
 
   y (val) {
     if (!arguments.length) return this.pos.y;
-    this.pos.y = val;
-    if (this.sprite) this.sprite.position.y = this.pos.y;
+    this.position(this.pos.x, val);
     return this;
   }
 

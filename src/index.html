@@ -7,7 +7,13 @@
         <meta name="keywords" content="game">
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <title>Corona</title>
+        <link rel="icon" type="image/png" href="assets/favicon.png">
         <link rel="stylesheet" type="text/css" href="index.css">
+        <script>
+            window.favicon = function (active) {
+                document.querySelector("link[rel*='icon']").href = active ? 'assets/favicon-active.png' : 'assets/favicon.png';
+            }
+        </script>
     </head>
     <body>
     </body>

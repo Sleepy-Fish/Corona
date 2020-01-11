@@ -2,6 +2,7 @@ import U from '../utilities';
 import * as PIXI from 'pixi.js';
 import { Point } from '../geom';
 
+// Block is a psuedo spacial. It just applies graphics and state to its container.
 export default class Block {
   constructor (container, r1, r2, start, end) {
     this.container = container;

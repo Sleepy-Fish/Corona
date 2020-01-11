@@ -1,9 +1,8 @@
 import C from '../constants.json';
-import { Point, Circle } from '../geom';
+import { Circle } from '../geom';
 import Block from './Block.js';
 
 const _defaults = {
-  position: new Point(window.innerWidth / 2, window.innerHeight / 2),
   innerRadius: 150,
   outerRadius: 160,
   segments: 12,
@@ -12,7 +11,6 @@ const _defaults = {
 
 export default class Ring extends Circle {
   constructor (corona, {
-    position = _defaults.position,
     innerRadius = _defaults.innerRadius,
     outerRadius = _defaults.outerRadius,
     segments = _defaults.segments,
@@ -25,7 +23,6 @@ export default class Ring extends Circle {
     this.gutter = gutter;
     this.inner = new Circle(this, this.pos, innerRadius);
     this.outer = new Circle(this, this.pos, outerRadius);
-    this.position(position);
   }
 
   position (xOrPoint, y) {
@@ -36,26 +33,7 @@ export default class Ring extends Circle {
     for (const block of this.blocks.filter(b => !b.destroyed)) {
       block.position(this.pos);
     }
-  }
-
-  x (val) {
-    if (!arguments.length) return this.pos.x;
-    super.x(val);
-    this.inner.x(val);
-    this.outer.x(val);
-    for (const block of this.blocks.filter(b => !b.destroyed)) {
-      block.x(val);
-    }
-  }
-
-  y (val) {
-    if (!arguments.length) return this.pos.y;
-    super.y(val);
-    this.inner.y(val);
-    this.outer.y(val);
-    for (const block of this.blocks.filter(b => !b.destroyed)) {
-      block.y(val);
-    }
+    return this;
   }
 
   run (delta) {

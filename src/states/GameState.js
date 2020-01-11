@@ -14,8 +14,14 @@ export default class GameState extends State {
     this.scene.addChild(this.testText);
 
     this.world = new World();
-    this.corona = new Corona().makeSprite(this.scene).makeCollidable(this.world);
-    this.paddle = new Paddle().makeSprite(this.scene).makeCollidable(this.world);
+    this.corona = new Corona()
+      .position(window.innerWidth / 2, window.innerHeight / 2)
+      .makeSprite(this.scene)
+      .makeCollidable(this.world);
+    this.paddle = new Paddle()
+      .position(window.innerWidth / 2, window.innerHeight / 2)
+      .makeSprite(this.scene)
+      .makeCollidable(this.world);
   }
 
   run (delta) {

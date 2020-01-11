@@ -1,9 +1,7 @@
-// import C from '../constants.json';
-import { Point, Circle } from '../geom';
+import { Circle } from '../geom';
 import Ring from './Ring';
 
 const _defaults = {
-  position: new Point(window.innerWidth / 2, window.innerHeight / 2),
   radius: 150,
   core: 20,
   count: 10,
@@ -12,7 +10,6 @@ const _defaults = {
 
 export default class Corona extends Circle {
   constructor ({
-    position = _defaults.position,
     radius = _defaults.radius,
     core = _defaults.core,
     count = _defaults.count,
@@ -25,7 +22,6 @@ export default class Corona extends Circle {
     this.core = core;
     this.count = count;
     this.gutter = gutter;
-    this.position(position);
 
     const total = this.radius - (this.gutter * this.count) - this.core;
     const step = Math.floor(total / this.count);
@@ -33,7 +29,6 @@ export default class Corona extends Circle {
       const inner = (l * step) + (l * this.gutter) + this.core + this.gutter;
       const outer = (l * step) + (l * this.gutter) + step + this.core + this.gutter;
       const ring = new Ring(this, {
-        position: this.position(),
         innerRadius: inner,
         outerRadius: outer
       });
@@ -47,22 +42,7 @@ export default class Corona extends Circle {
     for (const ring of this.rings) {
       ring.position(this.pos);
     }
-  }
-
-  x (val) {
-    if (!arguments.length) return this.pos.x;
-    super.x(val);
-    for (const ring of this.rings) {
-      ring.x(val);
-    }
-  }
-
-  y (val) {
-    if (!arguments.length) return this.pos.y;
-    super.y(val);
-    for (const ring of this.rings) {
-      ring.y(val);
-    }
+    return this;
   }
 
   run (delta) {

@@ -1,12 +1,10 @@
 import C from '../constants.json';
 import U from '../utilities';
-// import * as PIXI from 'pixi.js';
 import { Controller } from '../input';
 import { Vector, Circle, Point } from '../geom';
 import Ball from './Ball';
 
 const _defaults = {
-  position: new Point(window.innerWidth / 2, window.innerHeight / 2),
   radius: 450,
   width: 20,
   arc: 15
@@ -14,7 +12,6 @@ const _defaults = {
 
 export default class Paddle extends Circle {
   constructor (container, world, {
-    position = _defaults.position,
     radius = _defaults.radius,
     width = _defaults.width,
     arc = _defaults.arc
@@ -24,7 +21,6 @@ export default class Paddle extends Circle {
     this.width = width;
     this.arc = arc;
     this.maxRotation = 5;
-    this.position(position);
 
     this.leftKeyDown = false;
     this.rightKeyDown = false;
@@ -53,15 +49,19 @@ export default class Paddle extends Circle {
   }
 
   makeBall () {
+    window.favicon(true);
     return new Ball()
-      .makeSprite(this.container)
-      .makeCollidable(this.world, 'ball')
       .position(this.spawn())
-      .velocity(this.centripetal());
+      .velocity(this.centripetal())
+      .makeSprite(this.container)
+      .makeCollidable(this.world, 'ball');
   }
 
   destroyBall (ball) {
-    if (ball instanceof Ball) ball.destroy();
+    if (ball instanceof Ball) {
+      window.favicon(false);
+      ball.destroy();
+    }
   }
 
   makeSprite (container) {
