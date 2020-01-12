@@ -150,21 +150,6 @@ export default class Spacial {
   }
 
   /**
-   * Increments the Spacial's position coordinates by the amount specified.
-   * @param {Vector|number} xOrVector If Vector, increments horizontal and vertical location by Vector. If number, increments horizontal location by value.
-   * @param {number} y Increments vertical location by value. Ignored if first parameter is a Vector.
-   * @return {Spacial} Returns this Spacial for chaining functions.
-   */
-  shift (xOrVector, y) {
-    if (xOrVector instanceof Object) {
-      this.position(this.pos.x + xOrVector.x, this.pos.y + xOrVector.y);
-    } else {
-      this.position(this.pos.x + xOrVector, this.pos.y + y);
-    }
-    return this;
-  }
-
-  /**
    * Sets or Gets the horizontal coordinate of the Spacial relative to its container.
    * @param {number} val Sets horizontal location to value.
    * @return {number|Spacial} If no parameter, getter returns horizontal location value. If parameter, setter returns this Spacial for chaining functions.
@@ -183,6 +168,21 @@ export default class Spacial {
   y (val) {
     if (!arguments.length) return this.pos.y;
     this.position(this.pos.x, val);
+    return this;
+  }
+
+  /**
+   * Increments the Spacial's position coordinates by the amount specified.
+   * @param {Vector|number} xOrVector If Vector, increments horizontal and vertical location by Vector. If number, increments horizontal location by value.
+   * @param {number} y Increments vertical location by value. Ignored if first parameter is a Vector.
+   * @return {Spacial} Returns this Spacial for chaining functions.
+   */
+  shift (xOrVector, y) {
+    if (xOrVector instanceof Object) {
+      this.position(this.pos.x + xOrVector.x, this.pos.y + xOrVector.y);
+    } else {
+      this.position(this.pos.x + xOrVector, this.pos.y + y);
+    }
     return this;
   }
 
@@ -206,6 +206,28 @@ export default class Spacial {
   }
 
   /**
+   * Sets or Gets the horizontal velocity.
+   * @param {number} val Sets horizontal velocity to value.
+   * @return {number|Spacial} If no parameter, getter returns horizontal velocity. If parameter, setter returns this Spacial for chaining functions.
+   */
+  velocityX (val) {
+    if (!arguments.length) return this.vel.x;
+    this.vel.x = val;
+    return this;
+  }
+
+  /**
+   * Sets or Gets the vertical velocity.
+   * @param {number} val Sets vertical velocity to value.
+   * @return {number|Spacial} If no parameter, getter returns vertical velocity. If parameter, setter returns this Spacial for chaining functions.
+   */
+  velocityY (val) {
+    if (!arguments.length) return this.vel.y;
+    this.vel.y = val;
+    return this;
+  }
+
+  /**
    * Increments the Spacial's velocity value by the amount specified.
    * Velocity will cap out at +/- maxTranslation if one is set regardless of input from accelerate.
    * @param {Vector|number} xOrVector If Vector, increments velocity by Vector. If number, increments horizontal velocity by value.
@@ -221,28 +243,6 @@ export default class Spacial {
       this.vel.y += y;
     }
     if (this.vel.magnitude() > this.maxTranslation) this.vel.magnitude(this.maxTranslation);
-    return this;
-  }
-
-  /**
-   * Sets or Gets the horizontal velocity.
-   * @param {number} val Sets horizontal velocity to value.
-   * @return {number|Spacial} If no parameter, getter returns horizontal velocity. If parameter, setter returns this Spacial for chaining functions.
-   */
-  vx (val) {
-    if (!arguments.length) return this.vel.x;
-    this.vel.x = val;
-    return this;
-  }
-
-  /**
-   * Sets or Gets the vertical velocity.
-   * @param {number} val Sets vertical velocity to value.
-   * @return {number|Spacial} If no parameter, getter returns vertical velocity. If parameter, setter returns this Spacial for chaining functions.
-   */
-  vy (val) {
-    if (!arguments.length) return this.vel.y;
-    this.vel.y = val;
     return this;
   }
 
@@ -310,5 +310,26 @@ export default class Spacial {
    * = Functions that deal with the scale and dimensions of the Spacial's visual and collision bounds relative to constants.json SCALE value =
    * ========================================================================================================================================= */
 
-  // Scale functions go here
+  // set get value of scale - returns Vector
+  scale (xOrVector, y) {}
+
+  // increment - no return
+  dilate (xOrVector, y) {}
+
+  // scale x - return float
+  scaleX (val) {}
+
+  // scale y - return float
+  scaleY (val) {}
+
+  // dilate amount per tick - returns Vector
+  dilation (xOrVector, y) {}
+
+  // dilate x per tick - returns float
+  dilationX (val) {}
+  // dilate y per tick - returns float
+  dilationY (val) {}
+
+  // increments dilation - no return
+  stretch (xOrVector, y) {}
 }
