@@ -18,7 +18,9 @@ export default class GameState extends State {
       .position(window.innerWidth / 2, window.innerHeight / 2)
       .makeSprite(this.scene)
       .makeCollidable(this.world);
-    this.paddle = new Paddle()
+    this.paddle = new Paddle(null, {
+      maxRotation: 5
+    })
       .position(window.innerWidth / 2, window.innerHeight / 2)
       .makeSprite(this.scene)
       .makeCollidable(this.world);

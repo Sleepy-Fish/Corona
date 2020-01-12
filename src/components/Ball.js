@@ -8,10 +8,10 @@ const _defaults = {
 };
 
 export default class Ball extends Circle {
-  constructor ({
+  constructor (paddle, {
     radius = _defaults.radius
   } = _defaults) {
-    super();
+    super(paddle, arguments[1]);
     this.radius = radius;
   }
 

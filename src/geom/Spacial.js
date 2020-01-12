@@ -8,19 +8,47 @@ import U from '../utilities';
 import * as PIXI from 'pixi.js';
 import { Point, Vector } from '.';
 
+const _defaults = {
+  maxTranslation: Infinity,
+  maxRotation: Infinity,
+  maxDilation: Infinity
+};
+
 export default class Spacial {
-  constructor (parent = null) {
+  /**
+   * Abstract class that gives physical transformation: (translation, rotation, and dilation) properties to a subclass
+   * @param {PIXI.Container} container What to PIXI container to draw the sprite onto.
+   * @return {Spacial} Returns this Spacial for chaining functions.
+   */
+  constructor (parent = null, {
+    maxTranslation = _defaults.maxTranslation,
+    maxRotation = _defaults.maxRotation,
+    maxDilation = _defaults.maxDilation
+  } = _defaults) {
     this.id = U.uuid();
-    this.pos = Point.Zero();
-    this.vel = Vector.Zero();
-    this.ang = 0; // Angle (Rotational equivelant to position)
-    this.rot = 0; // Rotation (Rotational equivelant to velocity)
-    this.maxSpeed = Infinity;
-    this.maxRotation = Infinity;
-    this.sprite = null; // optional visual sprite
-    this.dynamic = true; // is moving about / effected by velocity
-    this.awake = true; // is being checked for collsions
     this.parent = parent;
+
+    // Spacial values
+    this.pos = Point.Zero(); // Position - Tranlational value
+    this.vel = Vector.Zero(); // Velocity - Change in translation per tick
+    this.ang = 0; // Angle - Rotational value
+    this.rot = 0; // Rotation - Change in rotation per tick
+    this.scl = Vector.One(); // Scale - Dilational value
+    this.dil = Vector.Zero(); // Dilation - Change in dilation per tick
+
+    // States
+    this.dynamic = true; // Spacial values are updated per tick
+    this.awake = true; // Collision being checked per tick
+
+    // Object extensions
+    this.sprite = null; // PIXI.Sprite object set by 'makeSprite' function
+    this.debug = null; // PIXI.Sprite object set by 'makeDebug' function
+    this.watcher = null; // World.watcher object set by 'makeCollidable' function
+
+    // Options
+    this.maxTranslation = maxTranslation; // Caps +/- velocity at this value
+    this.maxRotation = maxRotation; // Caps +/- rotation at this value
+    this.maxDilation = maxDilation; // Caps +/- dilation at this value
   }
 
   /**
@@ -75,7 +103,7 @@ export default class Spacial {
 
   /**
    * Function to be called per tick a game loop.
-   * Automatically handles tranlational, rotational, and transformative change per tick.
+   * Automatically handles tranlational, rotational, and dilational change per tick.
    * @param {number} delta How much time has passed since the last tick
    */
   run (delta) {
@@ -179,7 +207,7 @@ export default class Spacial {
 
   /**
    * Increments the Spacial's velocity value by the amount specified.
-   * Velocity will cap out at +/- maxSpeed if one is set regardless of input from accelerate.
+   * Velocity will cap out at +/- maxTranslation if one is set regardless of input from accelerate.
    * @param {Vector|number} xOrVector If Vector, increments velocity by Vector. If number, increments horizontal velocity by value.
    * @param {number} y Increments veritcal velocity by value. Ignored if first parameter is a Vector.
    * @return {Spacial} Returns this Spacial for chaining functions.
@@ -192,7 +220,7 @@ export default class Spacial {
       this.vel.x += xOrVector;
       this.vel.y += y;
     }
-    if (this.vel.magnitude() > this.maxSpeed) this.vel.magnitude(this.maxSpeed);
+    if (this.vel.magnitude() > this.maxTranslation) this.vel.magnitude(this.maxTranslation);
     return this;
   }
 

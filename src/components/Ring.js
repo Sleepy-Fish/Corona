@@ -5,7 +5,7 @@ import Block from './Block.js';
 const _defaults = {
   innerRadius: 150,
   outerRadius: 160,
-  segments: 12,
+  count: 12,
   gutter: 1
 };
 
@@ -13,16 +13,20 @@ export default class Ring extends Circle {
   constructor (corona, {
     innerRadius = _defaults.innerRadius,
     outerRadius = _defaults.outerRadius,
-    segments = _defaults.segments,
+    count = _defaults.count,
     gutter = _defaults.gutter
   } = _defaults) {
-    super(corona);
+    super(corona, arguments[1]);
     this.blocks = [];
     // set values
-    this.segments = segments;
+    this.count = count;
     this.gutter = gutter;
-    this.inner = new Circle(this, this.pos, innerRadius);
-    this.outer = new Circle(this, this.pos, outerRadius);
+    this.inner = new Circle(this, {
+      radius: innerRadius
+    });
+    this.outer = new Circle(this, {
+      radius: outerRadius
+    });
   }
 
   position (xOrPoint, y) {
@@ -42,16 +46,19 @@ export default class Ring extends Circle {
   }
 
   makeSprite (container) {
-    super.makeSprite(container);
+    // no super
+
+    this.container = container;
+
     if (C.DEBUG) {
       this.inner.makeDebug(this.container, 0x00ffff);
       this.outer.makeDebug(this.container, 0xff00ff);
     }
 
-    const total = 360 - (this.gutter * this.segments);
-    const step = Math.floor(total / this.segments);
+    const total = 360 - (this.gutter * this.count);
+    const step = Math.floor(total / this.count);
 
-    for (let s = 0; s < this.segments; s++) {
+    for (let s = 0; s < this.count; s++) {
       const block = new Block(
         container,
         this.inner.radius,

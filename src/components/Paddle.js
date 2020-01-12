@@ -11,16 +11,15 @@ const _defaults = {
 };
 
 export default class Paddle extends Circle {
-  constructor (container, world, {
+  constructor (parent, {
     radius = _defaults.radius,
     width = _defaults.width,
     arc = _defaults.arc
   } = _defaults) {
-    super(container, world);
+    super(parent, arguments[1]);
     this.radius = radius;
     this.width = width;
     this.arc = arc;
-    this.maxRotation = 5;
 
     this.leftKeyDown = false;
     this.rightKeyDown = false;
@@ -50,7 +49,7 @@ export default class Paddle extends Circle {
 
   makeBall () {
     window.favicon(true);
-    return new Ball()
+    return new Ball(this)
       .position(this.spawn())
       .velocity(this.centripetal())
       .makeSprite(this.container)

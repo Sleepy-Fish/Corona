@@ -1,9 +1,15 @@
 import * as PIXI from 'pixi.js';
 import Spacial from './Spacial';
 
+const _defaults = {
+  radius: 1
+};
+
 export default class Circle extends Spacial {
-  constructor (parent, position, radius) {
-    super(parent, position);
+  constructor (parent, {
+    radius = _defaults.radius
+  } = _defaults) {
+    super(parent, arguments[1]);
     this.radius = radius;
     this.type = 'circle';
   }

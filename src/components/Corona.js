@@ -9,13 +9,13 @@ const _defaults = {
 };
 
 export default class Corona extends Circle {
-  constructor ({
+  constructor (parent, {
     radius = _defaults.radius,
     core = _defaults.core,
     count = _defaults.count,
     gutter = _defaults.gutter
   } = _defaults) {
-    super(null);
+    super(parent, arguments[1]);
     this.rings = [];
     // set values
     this.radius = radius;
