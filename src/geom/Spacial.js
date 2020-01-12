@@ -310,7 +310,15 @@ export default class Spacial {
    * = Functions that deal with the scale and dimensions of the Spacial's visual and collision bounds relative to constants.json SCALE value =
    * ========================================================================================================================================= */
 
-  // set get value of scale - returns Vector
+  /**
+   * Sets or Gets the scale of the Spacial.
+   * Scale factor change per tick will cap out at +/- maxSize
+   * (Equivelant to 'position' for scale)
+   * @param {Vector|number} xOrVector If Vector, sets horizontal and vertical scale to Vector. If number, sets horizontal scale to value.
+   * @param {number} y Sets vertical scalae to value. Ignored if first parameter is a Vector.
+   * @param {function} cb For internal use only to allow subclasses to extend this function easier.
+   * @return {Vector|Spacial} If no parameters, getter returns scale as Vector. If parameters, setter returns this Spacial for chaining functions.
+   */
   scale (xOrVector, y, cb) {
     if (!arguments.length) return this.scl.copy();
     if (xOrVector instanceof Object) {
@@ -334,21 +342,34 @@ export default class Spacial {
     return this;
   }
 
-  // scale x - return float
+  /**
+   * Sets or Gets the horizontal scale factor of the Spacial.
+   * @param {number} val Sets horizontal scale factor to value.
+   * @return {number|Spacial} If no parameter, getter returns horizontal scale factor. If parameter, setter returns this Spacial for chaining functions.
+   */
   scaleX (val) {
     if (!arguments.length) return this.scl.x;
     this.scale(val, this.scl.y);
     return this;
   }
 
-  // scale y - return float
+  /**
+   * Sets or Gets the vertical scale factor of the Spacial.
+   * @param {number} val Sets vertical scale factor to value.
+   * @return {number|Spacial} If no parameter, getter returns vertical scale factor. If parameter, setter returns this Spacial for chaining functions.
+   */
   scaleY (val) {
     if (!arguments.length) return this.scl.y;
     this.scale(this.scl.x, val);
     return this;
   }
 
-  // increment - no return
+  /**
+   * Increments the Spacial's scale factor by the amount specified.
+   * @param {Vector|number} xOrVector If Vector, increments horizontal and vertical scale by Vector. If number, increments horizontal scale by value.
+   * @param {number} y Increments vertical scale by value. Ignored if first parameter is a Vector.
+   * @return {Spacial} Returns this Spacial for chaining functions.
+   */
   dilate (xOrVector, y) {
     if (xOrVector instanceof Object) {
       this.scale(this.scl.plus(xOrVector));
@@ -358,7 +379,14 @@ export default class Spacial {
     return this;
   }
 
-  // dilate amount per tick - returns Vector
+  /**
+   * Sets or Gets the rate of scale change of the Spacial.
+   * While dynamic is true, scale automatically changes factor via the run function.
+   * (Equivelant to 'velocity' for scale)
+   * @param {Vector|number} xOrVector If Vector, sets dilation per tick to Vector. If number, sets horizontal dilation per tick to value.
+   * @param {number} y Sets vertical dilation per tick to value. Ignored if first parameter is a Vector.
+   * @return {Vector|Spacial} If no parameters, getter returns dilation per tick as Vector. If parameters, setter returns this Spacial for chaining functions.
+   */
   dilation (xOrVector, y) {
     if (!arguments.length) return this.dil.copy();
     if (xOrVector instanceof Object) {
@@ -371,21 +399,35 @@ export default class Spacial {
     return this;
   }
 
-  // dilate x per tick - returns float
+  /**
+   * Sets or Gets the horizontal dilation.
+   * @param {number} val Sets horizontal scale factor to value.
+   * @return {number|Spacial} If no parameter, getter returns horizontal scale factor. If parameter, setter returns this Spacial for chaining functions.
+   */
   dilationX (val) {
     if (!arguments.length) return this.dil.x;
     this.dilation(val, this.dil.y);
     return this;
   }
 
-  // dilate y per tick - returns float
+  /**
+   * Sets or Gets the vertical dilation.
+   * @param {number} val Sets vertical scale factor to value.
+   * @return {number|Spacial} If no parameter, getter returns vertical scale factor. If parameter, setter returns this Spacial for chaining functions.
+   */
   dilationY (val) {
     if (!arguments.length) return this.dil.y;
     this.dilation(this.dil.x, val);
     return this;
   }
 
-  // increments dilation - no return
+  /**
+   * Increments the Spacial's scale change per tick by the amount specified.
+   * (Equivelant to 'accelerate' for scale)
+   * @param {Vector|number} xOrVector If Vector, increments scale change per tick by Vector. If number, increments horizontal scale per tick by value.
+   * @param {number} y Increments vertical scale change per tick by value. Ignored if first parameter is a Vector.
+   * @return {Spacial} Returns this Spacial for chaining functions.
+   */
   stretch (xOrVector, y) {
     if (xOrVector instanceof Object) {
       this.dilation(this.dil.plus(xOrVector));
