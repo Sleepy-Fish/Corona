@@ -1,4 +1,3 @@
-import C from '../constants.json';
 import { Circle, Point, Vector } from '../geom';
 
 const _defaults = {
@@ -17,7 +16,6 @@ export default class Ball extends Circle {
 
   makeSprite (container) {
     super.makeSprite(container);
-    if (C.DEBUG) this.makeDebug(this.container, 0xff0000);
     this.sprite.x = this.pos.x;
     this.sprite.y = this.pos.y;
     this.gfx.beginFill(0x418261);

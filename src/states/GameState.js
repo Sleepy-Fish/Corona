@@ -1,4 +1,4 @@
-// import C from '../constants.json';
+import C from '../constants.json';
 import * as PIXI from 'pixi.js';
 import State from './State';
 import { World } from '../physics';
@@ -18,12 +18,14 @@ export default class GameState extends State {
       .position(window.innerWidth / 2, window.innerHeight / 2)
       .makeSprite(this.scene)
       .makeCollidable(this.world);
+    if (C.DEBUG) this.corona.makeDebug(this.scene);
     this.paddle = new Paddle(null, {
       maxRotation: 5
     })
       .position(window.innerWidth / 2, window.innerHeight / 2)
       .makeSprite(this.scene)
       .makeCollidable(this.world);
+    if (C.DEBUG) this.paddle.makeDebug(this.scene);
   }
 
   run (delta) {

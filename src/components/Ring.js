@@ -50,11 +50,6 @@ export default class Ring extends Circle {
 
     this.container = container;
 
-    if (C.DEBUG) {
-      this.inner.makeDebug(this.container, 0x00ffff);
-      this.outer.makeDebug(this.container, 0xff00ff);
-    }
-
     const total = 360 - (this.gutter * this.count);
     const step = Math.floor(total / this.count);
 
@@ -69,6 +64,12 @@ export default class Ring extends Circle {
       this.blocks.push(block);
     }
     return this;
+  }
+
+  makeDebug (container, color) {
+    // no super
+    this.inner.makeDebug(container, 0x00ffff);
+    this.outer.makeDebug(container, 0xff00ff);
   }
 
   makeCollidable (world) {

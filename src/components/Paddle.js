@@ -49,11 +49,13 @@ export default class Paddle extends Circle {
 
   makeBall () {
     window.favicon(true);
-    return new Ball(this)
+    const ball = new Ball(this)
       .position(this.spawn())
       .velocity(this.centripetal())
       .makeSprite(this.container)
       .makeCollidable(this.world, 'ball');
+    if (C.DEBUG) ball.makeDebug(this.container);
+    return ball;
   }
 
   destroyBall (ball) {
@@ -65,7 +67,6 @@ export default class Paddle extends Circle {
 
   makeSprite (container) {
     super.makeSprite(container);
-    if (C.DEBUG) this.makeDebug(this.container, 0x00ff00);
     const radStart = U.toRad(this.angle() - (this.arc / 2));
     const radEnd = U.toRad(this.angle() + (this.arc / 2));
     this.gfx.beginFill(0xf1f2f1);

@@ -11,7 +11,8 @@ import { Point, Vector } from '.';
 const _defaults = {
   maxTranslation: Infinity,
   maxRotation: Infinity,
-  maxDilation: Infinity
+  maxDilation: Infinity,
+  lockVelocityToAngle: false
 };
 
 export default class Spacial {
@@ -23,7 +24,8 @@ export default class Spacial {
   constructor (parent = null, {
     maxTranslation = _defaults.maxTranslation,
     maxRotation = _defaults.maxRotation,
-    maxDilation = _defaults.maxDilation
+    maxDilation = _defaults.maxDilation,
+    lockVelocityToAngle = _defaults.lockVelocityToAngle
   } = _defaults) {
     this.id = U.uuid();
     this.parent = parent;
@@ -49,6 +51,7 @@ export default class Spacial {
     this.maxTranslation = maxTranslation; // Caps +/- velocity at this value
     this.maxRotation = maxRotation; // Caps +/- rotation at this value
     this.maxDilation = maxDilation; // Caps +/- dilation at this value
+    this.lockVelocityToAngle = lockVelocityToAngle; // If true, velocity is always relative to angle like propulsion.
   }
 
   /**
@@ -256,14 +259,16 @@ export default class Spacial {
    * Stored angle is always clamped to be between 0 and 360.
    * (Equivelant to 'position' for angle)
    * @param {number} degree Sets angle to value in degrees.
-   * @param {boolean} changeVelocity If true, also updates the direction of the Spacials velocity. Useful for propulsion simulation.
+   * @param {function} cb For internal use only to allow subclasses to extend this function easier.
    * @return {number|Spacial} If no parameter, getter returns angle in degrees. If parameter, setter returns this Spacial for chaining functions.
    */
-  angle (degree, changeVelocity) {
+  angle (degree, cb) {
     if (!arguments.length) return U.clampAngle(this.ang);
     this.ang = U.clampAngle(degree);
     if (this.sprite) this.sprite.angle = this.ang;
-    if (changeVelocity) this.vel.angle(this.ang);
+    if (this.debug) this.debug.angle = this.ang;
+    if (this.lockVelocityToAngle) this.vel.angle(this.ang);
+    if (typeof cb === 'function') cb();
     return this;
   }
 
@@ -311,7 +316,26 @@ export default class Spacial {
    * ========================================================================================================================================= */
 
   // set get value of scale - returns Vector
-  scale (xOrVector, y) {}
+  scale (xOrVector, y, cb) {
+    if (!arguments.length) return this.scl.copy();
+    if (xOrVector instanceof Object) {
+      this.scl.x = xOrVector.x;
+      this.scl.y = xOrVector.y;
+    } else {
+      this.scl.x = xOrVector;
+      this.scl.y = y;
+    }
+    if (this.sprite) {
+      this.sprite.scale.x = this.scl.x;
+      this.sprite.scale.y = this.scl.y;
+    }
+    if (this.debug) {
+      this.debug.scale.x = this.scl.x;
+      this.debug.scale.y = this.scl.y;
+    }
+    if (typeof cb === 'function') cb();
+    return this;
+  }
 
   // increment - no return
   dilate (xOrVector, y) {}
