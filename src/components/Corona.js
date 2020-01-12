@@ -1,3 +1,4 @@
+import * as C from '../constants.json';
 import { Circle } from '../geom';
 import Ring from './Ring';
 
@@ -59,6 +60,7 @@ export default class Corona extends Circle {
     this.gfx.endFill();
     for (const ring of this.rings) {
       ring.makeSprite(container);
+      if (C.DEBUG) ring.makeDebug(container);
     }
     return this;
   }

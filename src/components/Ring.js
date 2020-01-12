@@ -68,8 +68,8 @@ export default class Ring extends Circle {
 
   makeDebug (container, color) {
     // no super
-    this.inner.makeDebug(container, 0x00ffff);
-    this.outer.makeDebug(container, 0xff00ff);
+    this.inner.makeDebug(container);
+    this.outer.makeDebug(container);
   }
 
   makeCollidable (world) {
