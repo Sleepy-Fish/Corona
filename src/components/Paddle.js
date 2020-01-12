@@ -85,7 +85,11 @@ export default class Paddle extends Circle {
     });
     this.watcher.on('collide', (actor, interactor) => {
       const deltaAngle = actor.angle() - this.position().angle(interactor.position());
-      if (Math.abs(deltaAngle) < (this.arc / 2) + C.PADDLE_BOUNCE_LEEWAY) {
+      // TODO: add angle arithmatic?
+      if (
+        Math.abs(deltaAngle) < (this.arc / 2) + C.PADDLE_BOUNCE_LEEWAY ||
+        Math.abs(deltaAngle - 360) < (this.arc / 2) + C.PADDLE_BOUNCE_LEEWAY // handles the 359.9 to 0 clamp back
+      ) {
         const bounce = interactor.velocity()
           .times(-1)
           .rotation(-deltaAngle);
