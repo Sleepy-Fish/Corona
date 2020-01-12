@@ -45,6 +45,22 @@ export default class Corona extends Circle {
     });
   }
 
+  angle (degree) {
+    return super.angle(degree, () => {
+      for (const ring of this.rings) {
+        ring.angle(this.pos);
+      }
+    });
+  }
+
+  scale (xOrVector, y) {
+    return super.scale(xOrVector, y, () => {
+      for (const ring of this.rings) {
+        ring.scale(this.scl);
+      }
+    });
+  }
+
   run (delta) {
     super.run(delta);
     for (const ring of this.rings) {

@@ -9,9 +9,9 @@ import * as PIXI from 'pixi.js';
 import { Point, Vector } from '.';
 
 const _defaults = {
-  maxTranslation: Infinity,
+  maxSpeed: Infinity,
   maxRotation: Infinity,
-  maxDilation: Infinity,
+  maxSize: Infinity,
   lockVelocityToAngle: false
 };
 
@@ -22,9 +22,9 @@ export default class Spacial {
    * @return {Spacial} Returns this Spacial for chaining functions.
    */
   constructor (parent = null, {
-    maxTranslation = _defaults.maxTranslation,
+    maxSpeed = _defaults.maxSpeed,
     maxRotation = _defaults.maxRotation,
-    maxDilation = _defaults.maxDilation,
+    maxSize = _defaults.maxSize,
     lockVelocityToAngle = _defaults.lockVelocityToAngle
   } = _defaults) {
     this.id = U.uuid();
@@ -48,9 +48,9 @@ export default class Spacial {
     this.watcher = null; // World.watcher object set by 'makeCollidable' function
 
     // Options
-    this.maxTranslation = maxTranslation; // Caps +/- velocity at this value
+    this.maxSpeed = maxSpeed; // Caps +/- velocity at this value
     this.maxRotation = maxRotation; // Caps +/- rotation at this value
-    this.maxDilation = maxDilation; // Caps +/- dilation at this value
+    this.maxSize = maxSize; // Caps +/- dilation at this value
     this.lockVelocityToAngle = lockVelocityToAngle; // If true, velocity is always relative to angle like propulsion.
   }
 
@@ -113,9 +113,7 @@ export default class Spacial {
     if (this.dynamic) {
       this.shift(this.vel);
       this.rotate(this.rot);
-    }
-    if (this.awake) {
-      // collide
+      this.dilate(this.dil);
     }
   }
 
@@ -205,6 +203,7 @@ export default class Spacial {
       this.vel.x = xOrVector;
       this.vel.y = y;
     }
+    if (this.vel.magnitude() > this.maxSpeed) this.vel.magnitude(this.maxSpeed);
     return this;
   }
 
@@ -215,7 +214,7 @@ export default class Spacial {
    */
   velocityX (val) {
     if (!arguments.length) return this.vel.x;
-    this.vel.x = val;
+    this.velocity(val, this.vel.y);
     return this;
   }
 
@@ -226,26 +225,23 @@ export default class Spacial {
    */
   velocityY (val) {
     if (!arguments.length) return this.vel.y;
-    this.vel.y = val;
+    this.velocity(this.vel.x, val);
     return this;
   }
 
   /**
    * Increments the Spacial's velocity value by the amount specified.
-   * Velocity will cap out at +/- maxTranslation if one is set regardless of input from accelerate.
+   * Velocity will cap out at +/- maxSpeed if one is set regardless of input from accelerate.
    * @param {Vector|number} xOrVector If Vector, increments velocity by Vector. If number, increments horizontal velocity by value.
    * @param {number} y Increments veritcal velocity by value. Ignored if first parameter is a Vector.
    * @return {Spacial} Returns this Spacial for chaining functions.
    */
   accelerate (xOrVector, y) {
     if (xOrVector instanceof Object) {
-      this.vel.x += xOrVector.x;
-      this.vel.y += xOrVector.y;
+      this.velocity(this.vel.plus(xOrVector));
     } else {
-      this.vel.x += xOrVector;
-      this.vel.y += y;
+      this.velocity(this.vel.x + xOrVector, this.vel.y + y);
     }
-    if (this.vel.magnitude() > this.maxTranslation) this.vel.magnitude(this.maxTranslation);
     return this;
   }
 
@@ -279,8 +275,7 @@ export default class Spacial {
    * @return {Spacial} Returns this Spacial for chaining functions.
    */
   rotate (degree) {
-    this.ang += degree;
-    if (this.sprite) this.sprite.angle = this.ang;
+    this.angle(this.ang + degree);
     return this;
   }
 
@@ -294,6 +289,7 @@ export default class Spacial {
   rotation (degree) {
     if (!arguments.length) return this.rot;
     this.rot = degree;
+    if (Math.abs(this.rot) > this.maxRotation) this.rotation(this.maxRotation * Math.sign(this.rot));
     return this;
   }
 
@@ -305,8 +301,7 @@ export default class Spacial {
    * @return {Spacial} Returns this Spacial for chaining functions.
    */
   spin (degree) {
-    this.rot += degree;
-    if (Math.abs(this.rot) > this.maxRotation) this.rotation(this.maxRotation * Math.sign(this.rot));
+    this.rotation(this.rot + degree);
     return this;
   }
 
@@ -333,27 +328,70 @@ export default class Spacial {
       this.debug.scale.x = this.scl.x;
       this.debug.scale.y = this.scl.y;
     }
+    if (this.scl.x > this.maxSize) this.scl.x = this.maxSize;
+    if (this.scl.y > this.maxSize) this.scl.y = this.maxSize;
     if (typeof cb === 'function') cb();
     return this;
   }
 
-  // increment - no return
-  dilate (xOrVector, y) {}
-
   // scale x - return float
-  scaleX (val) {}
+  scaleX (val) {
+    if (!arguments.length) return this.scl.x;
+    this.scale(val, this.scl.y);
+    return this;
+  }
 
   // scale y - return float
-  scaleY (val) {}
+  scaleY (val) {
+    if (!arguments.length) return this.scl.y;
+    this.scale(this.scl.x, val);
+    return this;
+  }
+
+  // increment - no return
+  dilate (xOrVector, y) {
+    if (xOrVector instanceof Object) {
+      this.scale(this.scl.plus(xOrVector));
+    } else {
+      this.scale(this.scl.x + xOrVector, this.scl.y + y);
+    }
+    return this;
+  }
 
   // dilate amount per tick - returns Vector
-  dilation (xOrVector, y) {}
+  dilation (xOrVector, y) {
+    if (!arguments.length) return this.dil.copy();
+    if (xOrVector instanceof Object) {
+      this.dil.x = xOrVector.x;
+      this.dil.y = xOrVector.y;
+    } else {
+      this.dil.x = xOrVector;
+      this.dil.y = y;
+    }
+    return this;
+  }
 
   // dilate x per tick - returns float
-  dilationX (val) {}
+  dilationX (val) {
+    if (!arguments.length) return this.dil.x;
+    this.dilation(val, this.dil.y);
+    return this;
+  }
+
   // dilate y per tick - returns float
-  dilationY (val) {}
+  dilationY (val) {
+    if (!arguments.length) return this.dil.y;
+    this.dilation(this.dil.x, val);
+    return this;
+  }
 
   // increments dilation - no return
-  stretch (xOrVector, y) {}
+  stretch (xOrVector, y) {
+    if (xOrVector instanceof Object) {
+      this.dilation(this.dil.plus(xOrVector));
+    } else {
+      this.dilation(this.dil.x + xOrVector, this.dil.y + y);
+    }
+    return this;
+  }
 }
